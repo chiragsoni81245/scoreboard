@@ -46,6 +46,11 @@ def reload():
 	t.start()
 	return "<html><h1>Reloading Started ( complete in 2 minutes ) </h1></html>"
 
+@app.route("/sudo_alpha")
+def sudo_reload():
+	score_count( handles )
+	return "<html><h1 style='text-align:center;'>Reloaded</h1></html>"
+
 
 def reloading(handles):
 	print("Thread has been started")
