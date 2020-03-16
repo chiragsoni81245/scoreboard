@@ -14,24 +14,22 @@
 		<p class="text-info text-center">Update in Every 20 Minutes</p>
 		<table class="table table-striped text-center">
 			<tr>
-				<th>Rank</th>
-				<th>Star</th>
 				<th>Handle</th>
+				<th>Verdict</th>
+				<th>Rating</th>
 				<th>Points</th>
-				<th>Accepted</th>
-				<th>Wrong</th>
-				<th></th>
 			</tr>
 
 			{% for tr in data %}
 				<tr>
-					<td>{{ tr[0] }}</td>
-					<td>{{ tr[1]['star'] }}</td>
-					<td><a href="https://codeforces.com/profile/{{ tr[1]['name'] }}" target="blank" >{{ tr[1]['name'] }}</a></td>
-					<td><b>{{ tr[1]['points'] }}</b></td>
-					<td>{{ tr[1]['accepted'] }}</td>
-					<td>{{ tr[1]['wrong'] }}</td>
-					<td><a href="{{ url_for( 'info',user=tr[1]['name'] ) }}">Details</a></td>
+					<td><a href="https://codeforces.com/profile/{{ tr['name'] }}" target="blank" >{{ tr['name'] }}</a></td>
+					{% if tr['aw']==1 %}
+						<td><b class="text-success">Accepted</b></td>
+					{% else %}
+						<td><b class="text-danger">Wrong Submission</b></td>
+					{% endif %}
+					<td><b>{{ tr['rating'] }}</b></td>
+					<td><b>{{ tr['point'] }}</b></td>
 				</tr>
 			{% endfor %}
 		</table>

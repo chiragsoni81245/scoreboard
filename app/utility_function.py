@@ -5,76 +5,134 @@ from threading import Thread
 import sqlite3 as sq3
 
 # AW = Accepted Wrong
-def func_points(handle,rating,data,AW):
+
+def q_generator( handle,aw,rating,point,query_list ):
+	q = "insert into aw(name,aw,rating,point) values('{}',{},{},{});".format(handle,aw,rating,point)
+	query_list.append( q )
+
+
+def func_points(handle,rating,data,AW,query_list):
+
+	if AW:
+		aw=1
+	else:
+		aw=0
 
 	if data[handle]["star"] == 4:
 		if rating < 1100:
 			if AW==True:
 				data[handle]["points"] += 30
+				q_generator( handle,aw,rating,30,query_list )
 			else:
-				data[handle]["points"] -= 6				
+				data[handle]["points"] -= 6	
+				q_generator( handle,aw,rating,-6,query_list )
+
 		elif rating > 1400:
 			if AW==True:
 				data[handle]["points"] += 100
+				q_generator( handle,aw,rating,100,query_list )
+
 			else:
 				data[handle]["points"] -= 20
+				q_generator( handle,aw,rating,-20,query_list )
+
 		else:
 			if AW==True:
 				data[handle]["points"] += ((rating-1100)/100)*10+50
+				q_generator( handle,aw,rating, ((rating-1100)/100)*10+50,query_list )
+
 			else:
-				data[handle]["points"] -= (((rating-1100)/100)*10+50)//5				
+				data[handle]["points"] -= (((rating-1100)/100)*10+50)//5
+				q_generator( handle,aw,rating, -(((rating-1100)/100)*10+50)//5,query_list )
+
 
 	if data[handle]["star"] == 3:
 		if rating < 1000:
 			if AW==True:
 				data[handle]["points"] += 30
+				q_generator( handle,aw,rating,30,query_list )
+
 			else:
-				data[handle]["points"] -= 6	
+				data[handle]["points"] -= 6
+				q_generator( handle,aw,rating,-6,query_list )
+
 		elif rating > 1200:
 			if AW==True:
 				data[handle]["points"] += 100
+				q_generator( handle,aw,rating,100,query_list )
+
 			else:
 				data[handle]["points"] -= 20
+				q_generator( handle,aw,rating,-20,query_list )
+
 		else:
 			if AW==True:
 				data[handle]["points"] += ((rating-1000)/100)*25+50
+				q_generator( handle,aw,rating,((rating-1000)/100)*25+50,query_list )
+
 			else:
-				data[handle]["points"] -= (((rating-1000)/100)*25+50)//5				
+				data[handle]["points"] -= (((rating-1000)/100)*25+50)//5
+				q_generator( handle,aw,rating,-(((rating-1000)/100)*25+50)//5,query_list )
+
 
 	if data[handle]["star"] == 2:
 		if rating < 900:
 			if AW==True:
 				data[handle]["points"] += 30
+				q_generator( handle,aw,rating,30,query_list )
+
 			else:
-				data[handle]["points"] -= 6	
+				data[handle]["points"] -= 6
+				q_generator( handle,aw,rating,-6,query_list )
+
 		elif rating > 1100:
 			if AW==True:
 				data[handle]["points"] += 100
+				q_generator( handle,aw,rating,100,query_list )
+
 			else:
 				data[handle]["points"] -= 20
+				q_generator( handle,aw,rating,-20,query_list )
+
 
 		else:
 			if AW==True:
 				data[handle]["points"] += ((rating-900)/100)*25+50
+				q_generator( handle,aw,rating,((rating-900)/100)*25+50,query_list )
+
 			else:
-				data[handle]["points"] -= (((rating-900)/100)*25+50)//5				
+				data[handle]["points"] -= (((rating-900)/100)*25+50)//5
+				q_generator( handle,aw,rating,-(((rating-900)/100)*25+50)//5,query_list )
+
 
 	if data[handle]["star"] == 1:
 		if rating < 700:
 			if AW==True:
 				data[handle]["points"] += 30
+				q_generator( handle,aw,rating,30,query_list )
+
 			else:
-				data[handle]["points"] -= 6	
+				data[handle]["points"] -= 6
+				q_generator( handle,aw,rating,-6,query_list )
+
 		elif rating > 900:
 			if AW==True:
 				data[handle]["points"] += 100
+				q_generator( handle,aw,rating,100,query_list )
+
 			else:
 				data[handle]["points"] -= 20
+				q_generator( handle,aw,rating,-20,query_list )
+
 		else:
 			if AW==True:
 				data[handle]["points"] += ((rating-700)/100)*25+50
+				q_generator( handle,aw,rating,((rating-700)/100)*25+50,query_list )
+
 			else:
 				data[handle]["points"] -= (((rating-700)/100)*25+50)//5
+				q_generator( handle,aw,rating,-(((rating-700)/100)*25+50)//5,query_list )
+
 
 	return data[handle]["points"]	
 
@@ -135,7 +193,7 @@ def get_questions( handle, page,data ):
 	data[handle]["pointer"] = fp
 	return  [ [c,w,accepted,wrong], br ]
 
-def page_traversal(handle,data):
+def page_traversal(handle,data,query_list):
 	page=1
 	c,w,accepted,wrong=0,0,[],[]
 	while(1):
@@ -153,24 +211,28 @@ def page_traversal(handle,data):
 		page+=1
 
 	for i in accepted:
-		func_points(handle,i,data,True)
+		func_points(handle,i,data,True,query_list)
 
 	for i in wrong:
-		func_points( handle,i,data,False )
+		func_points( handle,i,data,False,query_list)
+
+	data[handle]['accepted'] += c
+	data[handle]['wrong'] += w
 
 	print( "{} Accepted:{}, Wrong:{}, Points:{}".format( handle, c,w, data[handle]['points'] ) )
 
-def update_point( handle,data ):
-	page_traversal(handle,data)
+def update_point( handle,data,query_list ):
+	page_traversal(handle,data,query_list)
 
 def score_count( handles ):
 	db = sq3.connect("score.db")
 	c = db.cursor()
-	q="select star,name,points,pointer from score;"
+	q="select star,name,points,pointer,accepted,wrong from score;"
 	c.execute(q)
 	d = c.fetchall()
 	data = defaultdict(dict)
-	data = { i[1]:{'star':i[0],'points':i[2],'pointer':i[3]} for i in d }
+	data = { i[1]:{'star':i[0],'points':i[2],'pointer':i[3],'accepted':i[4],'wrong':i[5]} for i in d }
+	query_list = []
 	# print( data )
 	
 	for handle in handles:
@@ -178,11 +240,14 @@ def score_count( handles ):
 		# t.daemon=True
 		# t.start()
 		# t.join()
-		update_point(handle,data)
+		update_point(handle,data,query_list)
 
 	for i in data:
-		q1="update score set points={},pointer='{}' where name='{}'".format(data[i]['points'],data[i]['pointer'],i)
+		q1="update score set points={},pointer='{}',accepted={},wrong={} where name='{}'".format(data[i]['points'],data[i]['pointer'],data[i]['accepted'],data[i]['wrong'],i)
 		c.execute(q1)
+
+	for i in query_list:	
+		c.execute(i)
 
 	db.commit()
 	db.close()

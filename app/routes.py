@@ -1,4 +1,4 @@
-from flask import Flask,render_template,jsonify
+from flask import Flask,render_template,jsonify,url_for,request
 from app.set_pointer import *
 from app.utility_function import *
 from collections import OrderedDict
@@ -13,15 +13,32 @@ def index():
 		
 	db = sq3.connect("score.db")
 	c = db.cursor()
-	q="select star,name,points,pointer from score;"
+	q="select star,name,points,accepted,wrong from score;"
 	c.execute(q)
 	d = c.fetchall()
-	data = [ { 'name':i[1], 'star':i[0], 'points':i[2] } for i in d ]
+	data = [ { 'name':i[1], 'star':i[0], 'points':i[2],'accepted':i[3],'wrong':i[4] } for i in d ]
 	db.close()
 
 	data.sort( key=lambda x: x['points'],reverse=True )
-	return render_template("score.html",data=data)
+	
+	data1=[]
+	for i in range(len(data)):
+		data1.append( ( i+1,data[i] ) )
+
+	return render_template("score.html",data=data1)
 	# return jsonify( data )
+
+
+@app.route("/info/<string:user>")
+def info(user):
+	db = sq3.connect("score.db")
+	c = db.cursor()
+	q = "select name,aw,rating,point from aw where name='{}';".format( user )
+	c.execute(q)
+	d = c.fetchall()
+	db.close()
+	data = [ { 'name':i[0],'aw':i[1],'rating':i[2],'point':i[3] } for i in d ]
+	return render_template("info.html",data=data)
 
 @app.route("/alpha")
 def reload():
