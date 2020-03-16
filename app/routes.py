@@ -35,7 +35,7 @@ def reloading(handles):
 	while(True):
 		score_count( handles )
 		print("reloaded")
-		time.sleep(1*60)
+		time.sleep(1)
 
 
 @app.route("/zeta")
