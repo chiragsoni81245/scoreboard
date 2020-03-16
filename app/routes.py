@@ -40,7 +40,7 @@ def info(user):
 	d = c.fetchall()
 	db.close()
 	data = [ { 'aw':i[1],'rating':i[2],'point':i[3],"question_txt":i[4],"question_link":i[5] } for i in d ]
-	return render_template("info.html",data=data,name=d[0][0])
+	return render_template("info.html",data=data,name=user)
 
 @app.route("/alpha")
 def reload():
