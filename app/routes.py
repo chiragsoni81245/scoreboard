@@ -44,8 +44,15 @@ def info(user):
 
 @app.route("/alpha")
 def reload():
-	Thread(name="reloader",target=reloading,args=(handles,)).start()
-	return "<html><h1>Reloading Started</h1></html>"
+	flag=0
+	for i in threading.enumerate()[1:]:
+		if i.name=="reloader":
+			flag=1
+	if flag==1:
+		return "<html><h1>Already Running</h1></html>"
+	else:
+		Thread(name="reloader",target=reloading,args=(handles,)).start()
+		return "<html><h1>Reloading Started</h1></html>"
 
 @app.route("/status_reloader")
 def status_reloader():
