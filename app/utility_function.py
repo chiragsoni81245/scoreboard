@@ -6,12 +6,18 @@ import sqlite3 as sq3
 
 # AW = Accepted Wrong
 
-def q_generator( handle,aw,rating,point,query_list ):
-	q = "insert into aw(name,aw,rating,point) values('{}',{},{},{});".format(handle,aw,rating,point)
+def q_generator( handle,aw,rating,point,query_list,question ):
+	q = "insert into aw(name,aw,rating,point,question_txt,question_link) values('{}',{},{},{},'{}','{}');".format(handle,
+																											aw,
+																											rating,
+																											point,
+																											question.text.strip().strip("\n").replace("'",""),
+																											question['href'].strip() )
+	
 	query_list.append( q )
 
 
-def func_points(handle,rating,data,AW,query_list):
+def func_points(handle,rating,data,AW,query_list,question):
 
 	if AW:
 		aw=1
@@ -22,116 +28,116 @@ def func_points(handle,rating,data,AW,query_list):
 		if rating < 1100:
 			if AW==True:
 				data[handle]["points"] += 30
-				q_generator( handle,aw,rating,30,query_list )
+				q_generator( handle,aw,rating,30,query_list,question )
 			else:
 				data[handle]["points"] -= 6	
-				q_generator( handle,aw,rating,-6,query_list )
+				q_generator( handle,aw,rating,-6,query_list,question )
 
 		elif rating > 1400:
 			if AW==True:
 				data[handle]["points"] += 100
-				q_generator( handle,aw,rating,100,query_list )
+				q_generator( handle,aw,rating,100,query_list,question )
 
 			else:
 				data[handle]["points"] -= 20
-				q_generator( handle,aw,rating,-20,query_list )
+				q_generator( handle,aw,rating,-20,query_list,question )
 
 		else:
 			if AW==True:
 				data[handle]["points"] += ((rating-1100)/100)*10+50
-				q_generator( handle,aw,rating, ((rating-1100)/100)*10+50,query_list )
+				q_generator( handle,aw,rating, ((rating-1100)/100)*10+50,query_list,question )
 
 			else:
 				data[handle]["points"] -= (((rating-1100)/100)*10+50)//5
-				q_generator( handle,aw,rating, -(((rating-1100)/100)*10+50)//5,query_list )
+				q_generator( handle,aw,rating, -(((rating-1100)/100)*10+50)//5,query_list,question )
 
 
 	if data[handle]["star"] == 3:
 		if rating < 1000:
 			if AW==True:
 				data[handle]["points"] += 30
-				q_generator( handle,aw,rating,30,query_list )
+				q_generator( handle,aw,rating,30,query_list,question )
 
 			else:
 				data[handle]["points"] -= 6
-				q_generator( handle,aw,rating,-6,query_list )
+				q_generator( handle,aw,rating,-6,query_list,question )
 
 		elif rating > 1200:
 			if AW==True:
 				data[handle]["points"] += 100
-				q_generator( handle,aw,rating,100,query_list )
+				q_generator( handle,aw,rating,100,query_list,question )
 
 			else:
 				data[handle]["points"] -= 20
-				q_generator( handle,aw,rating,-20,query_list )
+				q_generator( handle,aw,rating,-20,query_list,question )
 
 		else:
 			if AW==True:
 				data[handle]["points"] += ((rating-1000)/100)*25+50
-				q_generator( handle,aw,rating,((rating-1000)/100)*25+50,query_list )
+				q_generator( handle,aw,rating,((rating-1000)/100)*25+50,query_list,question )
 
 			else:
 				data[handle]["points"] -= (((rating-1000)/100)*25+50)//5
-				q_generator( handle,aw,rating,-(((rating-1000)/100)*25+50)//5,query_list )
+				q_generator( handle,aw,rating,-(((rating-1000)/100)*25+50)//5,query_list,question )
 
 
 	if data[handle]["star"] == 2:
 		if rating < 900:
 			if AW==True:
 				data[handle]["points"] += 30
-				q_generator( handle,aw,rating,30,query_list )
+				q_generator( handle,aw,rating,30,query_list,question )
 
 			else:
 				data[handle]["points"] -= 6
-				q_generator( handle,aw,rating,-6,query_list )
+				q_generator( handle,aw,rating,-6,query_list,question )
 
 		elif rating > 1100:
 			if AW==True:
 				data[handle]["points"] += 100
-				q_generator( handle,aw,rating,100,query_list )
+				q_generator( handle,aw,rating,100,query_list,question )
 
 			else:
 				data[handle]["points"] -= 20
-				q_generator( handle,aw,rating,-20,query_list )
+				q_generator( handle,aw,rating,-20,query_list,question )
 
 
 		else:
 			if AW==True:
 				data[handle]["points"] += ((rating-900)/100)*25+50
-				q_generator( handle,aw,rating,((rating-900)/100)*25+50,query_list )
+				q_generator( handle,aw,rating,((rating-900)/100)*25+50,query_list,question )
 
 			else:
 				data[handle]["points"] -= (((rating-900)/100)*25+50)//5
-				q_generator( handle,aw,rating,-(((rating-900)/100)*25+50)//5,query_list )
+				q_generator( handle,aw,rating,-(((rating-900)/100)*25+50)//5,query_list,question )
 
 
 	if data[handle]["star"] == 1:
 		if rating < 700:
 			if AW==True:
 				data[handle]["points"] += 30
-				q_generator( handle,aw,rating,30,query_list )
+				q_generator( handle,aw,rating,30,query_list,question )
 
 			else:
 				data[handle]["points"] -= 6
-				q_generator( handle,aw,rating,-6,query_list )
+				q_generator( handle,aw,rating,-6,query_list,question )
 
 		elif rating > 900:
 			if AW==True:
 				data[handle]["points"] += 100
-				q_generator( handle,aw,rating,100,query_list )
+				q_generator( handle,aw,rating,100,query_list,question )
 
 			else:
 				data[handle]["points"] -= 20
-				q_generator( handle,aw,rating,-20,query_list )
+				q_generator( handle,aw,rating,-20,query_list,question )
 
 		else:
 			if AW==True:
 				data[handle]["points"] += ((rating-700)/100)*25+50
-				q_generator( handle,aw,rating,((rating-700)/100)*25+50,query_list )
+				q_generator( handle,aw,rating,((rating-700)/100)*25+50,query_list,question )
 
 			else:
 				data[handle]["points"] -= (((rating-700)/100)*25+50)//5
-				q_generator( handle,aw,rating,-(((rating-700)/100)*25+50)//5,query_list )
+				q_generator( handle,aw,rating,-(((rating-700)/100)*25+50)//5,query_list,question )
 
 
 	return data[handle]["points"]	
@@ -159,12 +165,12 @@ def get_questions( handle, page,data ):
 
 	c = 0
 	w = 0
-	accepted = []
-	wrong = []
+	submission = []
 	br=0
 	fp = trs[0].find_all("td")[0].text.strip().strip("\n")
 	for i in trs:
 		point = i.find_all("td")[0].text.strip()
+		question = i.find_all("td")[3].find("a")
 
 		if point == data[handle]["pointer"]:
 			br=1
@@ -180,46 +186,42 @@ def get_questions( handle, page,data ):
 					link = "https://codeforces.com"+i.find_all("td")[3].a['href']
 					rating = fetch_rating(link)
 					if rating!=-1:
-						accepted.append( rating )
+						submission.append( (rating,question,True) )
 				else:
 					w = w + 1
 					link = "https://codeforces.com"+i.find_all("td")[3].a['href']
 					rating = fetch_rating(link)
 					if rating!=-1:
-						wrong.append( rating )
+						submission.append( (rating,question,False) )
 		except:
 			pass
 			
 	data[handle]["pointer"] = fp
-	return  [ [c,w,accepted,wrong], br ]
+	return  [ [c,w,submission], br ]
 
 def page_traversal(handle,data,query_list):
 	page=1
-	c,w,accepted,wrong=0,0,[],[]
+	c,w,submission=0,0,[]
 	while(1):
 		result = get_questions( handle,page,data )
 
 		l=result[0]
 		c+=l[0]
 		w+=l[1]
-		accepted+=l[2]
-		wrong+=l[3]
+		submission+=l[2]
 
 		if result[1]==1:
 			break
 
 		page+=1
 
-	for i in accepted:
-		func_points(handle,i,data,True,query_list)
-
-	for i in wrong:
-		func_points( handle,i,data,False,query_list)
+	for i in submission:
+		func_points(handle,i[0],data,i[2],query_list,i[1])
 
 	data[handle]['accepted'] += c
 	data[handle]['wrong'] += w
 
-	print( "{} Accepted:{}, Wrong:{}, Points:{}".format( handle, c,w, data[handle]['points'] ) )
+	print( "{} Accepted:{}, Wrong:{}, Points:{}\n".format( handle, c,w, data[handle]['points'] ) )
 
 def update_point( handle,data,query_list ):
 	page_traversal(handle,data,query_list)
@@ -246,7 +248,8 @@ def score_count( handles ):
 		q1="update score set points={},pointer='{}',accepted={},wrong={} where name='{}'".format(data[i]['points'],data[i]['pointer'],data[i]['accepted'],data[i]['wrong'],i)
 		c.execute(q1)
 
-	for i in query_list:	
+	for i in query_list:
+		print(i)	
 		c.execute(i)
 
 	db.commit()

@@ -44,7 +44,9 @@ q='''create table score( star integer,
 q2='''create table aw( name VARCHAR,
 						aw integer,
 						rating integer,
-						point integer ); '''
+						point integer,
+						question_txt VARCHAR,
+						question_link VARCHAR ); '''
 
 
 c.execute( q2 )
@@ -56,7 +58,7 @@ for i in data:
 																					i,
 																					data[i]['points'],
 																					data[i]['pointer'],0,0)
-	print(q)
+	# print(q)
 
 
 	c.execute( q1 )

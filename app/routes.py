@@ -2,9 +2,11 @@ from flask import Flask,render_template,jsonify,url_for,request
 from app.set_pointer import *
 from app.utility_function import *
 from collections import OrderedDict
-from threading import Thread
+from threading import Thread,Timer
 import time
 from app import app
+import threading
+from datetime import datetime
 
 handles = ['ziddi', 'tanu38', 'chiragsoni812', 'mohi07', 'chauhan002', 'shivambhat', 'sp_', 'Nishant_Rao', 'Aka_coder', 'hr4_harsh', 'AM_coder', 'ankitkochar1578', '_viru_', 'hitzmac', 'khiladi.07', '_chanchal', "shubhamz950"]
 
@@ -33,31 +35,39 @@ def index():
 def info(user):
 	db = sq3.connect("score.db")
 	c = db.cursor()
-	q = "select name,aw,rating,point from aw where name='{}';".format( user )
+	q = "select name,aw,rating,point,question_txt,question_link from aw where name='{}';".format( user )
 	c.execute(q)
 	d = c.fetchall()
 	db.close()
-	data = [ { 'name':i[0],'aw':i[1],'rating':i[2],'point':i[3] } for i in d ]
-	return render_template("info.html",data=data)
+	data = [ { 'aw':i[1],'rating':i[2],'point':i[3],"question_txt":i[4],"question_link":i[5] } for i in d ]
+	return render_template("info.html",data=data,name=d[0][0])
 
 @app.route("/alpha")
 def reload():
-	t = Thread(target=reloading,args=(handles,))
-	t.start()
-	return "<html><h1>Reloading Started ( complete in 2 minutes ) </h1></html>"
+	Thread(name="reloader",target=reloading,args=(handles,)).start()
+	return "<html><h1>Reloading Started</h1></html>"
 
-@app.route("/sudo_alpha")
-def sudo_reload():
-	score_count( handles )
-	return "<html><h1 style='text-align:center;'>Reloaded</h1></html>"
-
+@app.route("/status_reloader")
+def status_reloader():
+	flag=0
+	for i in threading.enumerate()[1:]:
+		if i.name=="reloader":
+			flag=1
+	if flag==1:
+		return "<html><h1>Running</h1></html>"
+	else:
+		return "<html><h1>Not Running</h1></html>"
 
 def reloading(handles):
-	print("Thread has been started")
-	while(True):
+	while True:
+		print("\nReloading has been started [{}]\n\n".format( datetime.now().strftime("%Y-%m-%d %H:%M") ) )
 		score_count( handles )
-		print("reloaded")
-		time.sleep(1)
+		time.sleep(2)
+
+@app.route("/sudo_reload")
+def sudo_reload():
+	score_count( handles )
+	return "<html><h1>Reloading Complete and reloader started again</h1></html>"
 
 
 @app.route("/zeta")
