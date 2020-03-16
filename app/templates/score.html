@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Score</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+	<div class="continer mx-auto">
+		<h1 class="text-center">Awakinn Code Week</h1>
+		<p class="text-info text-center">Update in Every 20 Minutes</p>
+		<table class="table table-striped text-center">
+			<tr>
+				<th>Star</th>
+				<th>Handle</th>
+				<th>Points</th>
+			</tr>
+
+			{% for tr in data %}
+				<tr>
+					<td>{{ tr['star'] }}</td>
+					<td>{{ tr['name'] }}</td>
+					<td><b>{{ tr['points'] }}</b></td>
+				</tr>
+			{% endfor %}
+		</table>
+	</div>
+</body>
+</html>
