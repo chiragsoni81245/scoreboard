@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from collections import defaultdict
 from threading import Thread
 import sqlite3 as sq3
+import time
 
 # AW = Accepted Wrong
 
@@ -157,17 +158,13 @@ def get_questions( handle, page,data ):
 	link = "https://codeforces.com/submissions/{}/page/{}".format(handle,page)
 	r = requests.get(link)
 	soup = BeautifulSoup(r.text,"html.parser")
-	# print(r.text)
-	# print(soup.prettify())
 	table = soup.find_all("table",{"class":["status-frame-datatable"]})[0]
-	# print(table)
 	trs = table.find_all("tr")[1:]
 
 	c = 0
 	w = 0
 	submission = []
 	br=0
-	fp = trs[0].find_all("td")[0].text.strip().strip("\n")
 	for i in trs:
 		point = i.find_all("td")[0].text.strip()
 		question = i.find_all("td")[3].find("a")
@@ -194,26 +191,37 @@ def get_questions( handle, page,data ):
 						submission.append( (rating,question,False) )
 		except:
 			pass
-	
-	if br==1:
-		data[handle]["pointer"] = fp
+		
 	return  [ [c,w,submission], br ]
+
+
+def start_pointer( handle ):
+	link = "https://codeforces.com/submissions/{}/page/1".format(handle)
+	r = requests.get(link)
+	soup = BeautifulSoup(r.text,"html.parser")
+	table = soup.find_all("table",{"class":["status-frame-datatable"]})[0]
+	trs = table.find_all("tr")[1:]
+	fp = trs[0].find_all("td")[0].text.strip().strip("\n")
+	return fp
 
 def page_traversal(handle,data,query_list):
 	page=1
 	c,w,submission=0,0,[]
+	fp = start_pointer( handle )
+	time.sleep( 2 )
 	while(1):
 		result = get_questions( handle,page,data )
-
 		l=result[0]
 		c+=l[0]
 		w+=l[1]
 		submission+=l[2]
 
 		if result[1]==1:
+			data[handle]["pointer"] = fp
 			break
 
 		page+=1
+		time.sleep(2)
 
 	for i in submission:
 		func_points(handle,i[0],data,i[2],query_list,i[1])
