@@ -7,18 +7,19 @@ import time
 
 # AW = Accepted Wrong
 
-def q_generator( handle,aw,rating,point,query_list,question ):
-	q = "insert into aw(name,aw,rating,point,question_txt,question_link) values('{}',{},{},{},'{}','{}');".format(handle,
+def q_generator( handle,aw,rating,point,query_list,question,date_time ):
+	q = "insert into aw(name,aw,rating,point,question_txt,question_link,date_time) values('{}',{},{},{},'{}','{}','{}');".format(handle,
 																											aw,
 																											rating,
 																											point,
 																											question.text.strip().strip("\n").replace("'",""),
-																											question['href'].strip() )
+																											question['href'].strip(),
+																											date_time )
 	
 	query_list.append( q )
 
 
-def func_points(handle,rating,data,AW,query_list,question):
+def func_points(handle,rating,data,AW,query_list,question,date_time):
 
 	if AW:
 		aw=1
@@ -29,116 +30,116 @@ def func_points(handle,rating,data,AW,query_list,question):
 		if rating < 1100:
 			if AW==True:
 				data[handle]["points"] += 30
-				q_generator( handle,aw,rating,30,query_list,question )
+				q_generator( handle,aw,rating,30,query_list,question,date_time )
 			else:
 				data[handle]["points"] -= 6	
-				q_generator( handle,aw,rating,-6,query_list,question )
+				q_generator( handle,aw,rating,-6,query_list,question,date_time )
 
 		elif rating > 1400:
 			if AW==True:
 				data[handle]["points"] += 100
-				q_generator( handle,aw,rating,100,query_list,question )
+				q_generator( handle,aw,rating,100,query_list,question,date_time )
 
 			else:
 				data[handle]["points"] -= 20
-				q_generator( handle,aw,rating,-20,query_list,question )
+				q_generator( handle,aw,rating,-20,query_list,question,date_time )
 
 		else:
 			if AW==True:
 				data[handle]["points"] += ((rating-1100)/100)*10+50
-				q_generator( handle,aw,rating, ((rating-1100)/100)*10+50,query_list,question )
+				q_generator( handle,aw,rating, ((rating-1100)/100)*10+50,query_list,question,date_time )
 
 			else:
 				data[handle]["points"] -= (((rating-1100)/100)*10+50)//5
-				q_generator( handle,aw,rating, -(((rating-1100)/100)*10+50)//5,query_list,question )
+				q_generator( handle,aw,rating, -(((rating-1100)/100)*10+50)//5,query_list,question,date_time )
 
 
 	if data[handle]["star"] == 3:
 		if rating < 1000:
 			if AW==True:
 				data[handle]["points"] += 30
-				q_generator( handle,aw,rating,30,query_list,question )
+				q_generator( handle,aw,rating,30,query_list,question,date_time )
 
 			else:
 				data[handle]["points"] -= 6
-				q_generator( handle,aw,rating,-6,query_list,question )
+				q_generator( handle,aw,rating,-6,query_list,question,date_time )
 
 		elif rating > 1200:
 			if AW==True:
 				data[handle]["points"] += 100
-				q_generator( handle,aw,rating,100,query_list,question )
+				q_generator( handle,aw,rating,100,query_list,question,date_time )
 
 			else:
 				data[handle]["points"] -= 20
-				q_generator( handle,aw,rating,-20,query_list,question )
+				q_generator( handle,aw,rating,-20,query_list,question,date_time )
 
 		else:
 			if AW==True:
 				data[handle]["points"] += ((rating-1000)/100)*25+50
-				q_generator( handle,aw,rating,((rating-1000)/100)*25+50,query_list,question )
+				q_generator( handle,aw,rating,((rating-1000)/100)*25+50,query_list,question,date_time )
 
 			else:
 				data[handle]["points"] -= (((rating-1000)/100)*25+50)//5
-				q_generator( handle,aw,rating,-(((rating-1000)/100)*25+50)//5,query_list,question )
+				q_generator( handle,aw,rating,-(((rating-1000)/100)*25+50)//5,query_list,question,date_time )
 
 
 	if data[handle]["star"] == 2:
 		if rating < 900:
 			if AW==True:
 				data[handle]["points"] += 30
-				q_generator( handle,aw,rating,30,query_list,question )
+				q_generator( handle,aw,rating,30,query_list,question,date_time )
 
 			else:
 				data[handle]["points"] -= 6
-				q_generator( handle,aw,rating,-6,query_list,question )
+				q_generator( handle,aw,rating,-6,query_list,question,date_time )
 
 		elif rating > 1100:
 			if AW==True:
 				data[handle]["points"] += 100
-				q_generator( handle,aw,rating,100,query_list,question )
+				q_generator( handle,aw,rating,100,query_list,question,date_time )
 
 			else:
 				data[handle]["points"] -= 20
-				q_generator( handle,aw,rating,-20,query_list,question )
+				q_generator( handle,aw,rating,-20,query_list,question,date_time )
 
 
 		else:
 			if AW==True:
 				data[handle]["points"] += ((rating-900)/100)*25+50
-				q_generator( handle,aw,rating,((rating-900)/100)*25+50,query_list,question )
+				q_generator( handle,aw,rating,((rating-900)/100)*25+50,query_list,question,date_time )
 
 			else:
 				data[handle]["points"] -= (((rating-900)/100)*25+50)//5
-				q_generator( handle,aw,rating,-(((rating-900)/100)*25+50)//5,query_list,question )
+				q_generator( handle,aw,rating,-(((rating-900)/100)*25+50)//5,query_list,question,date_time )
 
 
 	if data[handle]["star"] == 1:
 		if rating < 700:
 			if AW==True:
 				data[handle]["points"] += 30
-				q_generator( handle,aw,rating,30,query_list,question )
+				q_generator( handle,aw,rating,30,query_list,question,date_time )
 
 			else:
 				data[handle]["points"] -= 6
-				q_generator( handle,aw,rating,-6,query_list,question )
+				q_generator( handle,aw,rating,-6,query_list,question,date_time )
 
 		elif rating > 900:
 			if AW==True:
 				data[handle]["points"] += 100
-				q_generator( handle,aw,rating,100,query_list,question )
+				q_generator( handle,aw,rating,100,query_list,question,date_time )
 
 			else:
 				data[handle]["points"] -= 20
-				q_generator( handle,aw,rating,-20,query_list,question )
+				q_generator( handle,aw,rating,-20,query_list,question,date_time )
 
 		else:
 			if AW==True:
 				data[handle]["points"] += ((rating-700)/100)*25+50
-				q_generator( handle,aw,rating,((rating-700)/100)*25+50,query_list,question )
+				q_generator( handle,aw,rating,((rating-700)/100)*25+50,query_list,question,date_time )
 
 			else:
 				data[handle]["points"] -= (((rating-700)/100)*25+50)//5
-				q_generator( handle,aw,rating,-(((rating-700)/100)*25+50)//5,query_list,question )
+				q_generator( handle,aw,rating,-(((rating-700)/100)*25+50)//5,query_list,question,date_time )
 
 
 	return data[handle]["points"]	
@@ -168,6 +169,8 @@ def get_questions( handle, page,data ):
 	for i in trs:
 		point = i.find_all("td")[0].text.strip()
 		question = i.find_all("td")[3].find("a")
+		date_time = i.find_all("td")[1].text.strip().strip("\n")
+
 		if str(point) == str(data[handle]["pointer"]):
 			br=1
 			break
@@ -182,13 +185,13 @@ def get_questions( handle, page,data ):
 					link = "https://codeforces.com"+i.find_all("td")[3].a['href']
 					rating = fetch_rating(link)
 					if rating!=-1:
-						submission.append( (rating,question,True) )
+						submission.append( (rating,question,True,date_time) )
 				else:
 					w = w + 1
 					link = "https://codeforces.com"+i.find_all("td")[3].a['href']
 					rating = fetch_rating(link)
 					if rating!=-1:
-						submission.append( (rating,question,False) )
+						submission.append( (rating,question,False,date_time) )
 		except:
 			pass
 		
@@ -221,10 +224,9 @@ def page_traversal(handle,data,query_list):
 			break
 
 		page+=1
-		time.sleep(2)
 
 	for i in submission:
-		func_points(handle,i[0],data,i[2],query_list,i[1])
+		func_points(handle,i[0],data,i[2],query_list,i[1],i[3])
 
 	data[handle]['accepted'] += c
 	data[handle]['wrong'] += w

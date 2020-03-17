@@ -15,6 +15,7 @@
 		<h3 class="text-center">{{ name }}</h3>
 		<table class="table table-striped text-center">
 			<tr>
+				<th>Date Time</th>
 				<th>Question</th>
 				<th>Verdict</th>
 				<th>Rating</th>
@@ -23,6 +24,7 @@
 
 			{% for tr in data %}
 				<tr>
+					<td>{{ tr['date_time'] }}</td>
 					<td><a href="https://codeforces.com{{ tr['question_link'] }}" target="blank" >{{ tr['question_txt'] }}</a></td>
 					{% if tr['aw']==1 %}
 						<td><b class="text-success">Accepted</b></td>

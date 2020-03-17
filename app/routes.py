@@ -9,6 +9,7 @@ from multiprocessing import Process
 import multiprocessing
 from threading import Thread
 import threading
+from datetime import datetime
 
 handles = ['hr4_harsh', 'ziddi', 'tanu38', 'chiragsoni812', 'mohi07', 'chauhan002', 'shivambhat', 'sp_', 'Nishant_Rao', 'Aka_coder', 'AM_coder', 'ankitkochar1578', '_viru_', 'hitzmac', 'khiladi.07', '_chanchal', "shubhamz950"]
 
@@ -37,11 +38,12 @@ def index():
 def info(user):
 	db = sq3.connect("score.db")
 	c = db.cursor()
-	q = "select name,aw,rating,point,question_txt,question_link from aw where name='{}';".format( user )
+	q = "select name,aw,rating,point,question_txt,question_link,date_time from aw where name='{}';".format( user )
 	c.execute(q)
 	d = c.fetchall()
 	db.close()
-	data = [ { 'aw':i[1],'rating':i[2],'point':i[3],"question_txt":i[4],"question_link":i[5] } for i in d ]
+	data = [ { 'aw':i[1],'rating':i[2],'point':i[3],"question_txt":i[4],"question_link":i[5],"date_time":i[6] } for i in d ]
+	data.sort( key=lambda x: datetime.strptime( x['date_time'],"%b/%d/%Y %H:%M" ),reverse=True )
 	return render_template("info.html",data=data,name=user)
 
 @app.route("/alpha")

@@ -41,12 +41,14 @@ q='''create table score( star integer,
 						wrong integer ); '''
 
 
-q2='''create table aw( name VARCHAR,
+q2='''create table aw( id INTEGER PRIMARY KEY,
+						name VARCHAR,
 						aw integer,
 						rating integer,
 						point integer,
 						question_txt VARCHAR,
-						question_link VARCHAR ); '''
+						question_link VARCHAR,
+						date_time VARCHAR ); '''
 
 
 c.execute( q2 )
