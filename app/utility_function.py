@@ -192,6 +192,9 @@ def get_questions( handle, page,data ):
 					rating = fetch_rating(link)
 					if rating!=-1:
 						submission.append( (rating,question,False,date_time) )
+			else:
+				br=2
+				break
 		except:
 			pass
 		
@@ -219,6 +222,9 @@ def page_traversal(handle,data,query_list):
 		w+=l[1]
 		submission+=l[2]
 
+		if result[1]==2:
+			break
+			
 		if result[1]==1:
 			data[handle]["pointer"] = fp
 			break
