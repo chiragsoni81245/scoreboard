@@ -44,6 +44,9 @@ def info(user):
 	db.close()
 	data = [ { 'aw':i[1],'rating':i[2],'point':i[3],"question_txt":i[4],"question_link":i[5],"date_time":i[6] } for i in d ]
 	data.sort( key=lambda x: datetime.strptime( x['date_time'],"%b/%d/%Y %H:%M" ),reverse=True )
+	for i in data:
+		i['date_time'] = (datetime.strptime( i['date_time'],"%b/%d/%Y %H:%M" )+timedelta(hours=2,minutes=30)).strftime("%b/%d/%Y %H:%M")
+	
 	return render_template("info.html",data=data,name=user)
 
 @app.route("/alpha")
