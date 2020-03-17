@@ -12,7 +12,8 @@ handle_with_level= {"ziddi":4,"tanu38":4,"chiragsoni812":4,"mohi07":3,"chauhan00
 data = defaultdict(dict)
 data = { i:{"star":handle_with_level[i],"points":0,"pointer":"0","accepted":0,"wrong":0} for i in handle_with_level }
 
-spointers = {'ziddi': 73315082, 
+spointers = {'ziddi': 73315082,  
+				'hr4_harsh': 73344255,
 				'tanu38': 73127093, 
 				'chiragsoni812': 72939979, 
 				'mohi07': 73199151, 
@@ -21,7 +22,6 @@ spointers = {'ziddi': 73315082,
 				 'sp_': 73334404, 
 				 'Nishant_Rao': 73311376,
 				  'Aka_coder': 73336145, 
-				  'hr4_harsh': 73344255, 
 				  'AM_coder': 73355874, 
 				  'ankitkochar1578': 73330313, 
 				  '_viru_': 71858618, 'hitzmac': 73313399, 'khiladi.07': 73357095, '_chanchal': 73342154, 'shubhamz950': 55379990}

@@ -171,8 +171,7 @@ def get_questions( handle, page,data ):
 	for i in trs:
 		point = i.find_all("td")[0].text.strip()
 		question = i.find_all("td")[3].find("a")
-
-		if point == data[handle]["pointer"]:
+		if str(point) == str(data[handle]["pointer"]):
 			br=1
 			break
 
@@ -195,8 +194,9 @@ def get_questions( handle, page,data ):
 						submission.append( (rating,question,False) )
 		except:
 			pass
-			
-	data[handle]["pointer"] = fp
+	
+	if br==1:
+		data[handle]["pointer"] = fp
 	return  [ [c,w,submission], br ]
 
 def page_traversal(handle,data,query_list):
@@ -251,6 +251,8 @@ def score_count( handles ):
 	for i in query_list:
 		print(i)	
 		c.execute(i)
+
+	query_list=[]
 
 	db.commit()
 	db.close()

@@ -7,8 +7,10 @@ from app import app
 from datetime import datetime
 from multiprocessing import Process
 import multiprocessing
+from threading import Thread
+import threading
 
-handles = ['ziddi', 'tanu38', 'chiragsoni812', 'mohi07', 'chauhan002', 'shivambhat', 'sp_', 'Nishant_Rao', 'Aka_coder', 'hr4_harsh', 'AM_coder', 'ankitkochar1578', '_viru_', 'hitzmac', 'khiladi.07', '_chanchal', "shubhamz950"]
+handles = ['hr4_harsh', 'ziddi', 'tanu38', 'chiragsoni812', 'mohi07', 'chauhan002', 'shivambhat', 'sp_', 'Nishant_Rao', 'Aka_coder', 'AM_coder', 'ankitkochar1578', '_viru_', 'hitzmac', 'khiladi.07', '_chanchal', "shubhamz950"]
 
 @app.route("/")
 def index():
@@ -45,20 +47,20 @@ def info(user):
 @app.route("/alpha")
 def reload():
 	flag=0
-	for i in multiprocessing.active_children():
+	for i in threading.enumerate():
 		if i.name=="reloader":
 			flag=1
 	if flag==1:
 		return "<html><h1>Already Running</h1></html>"
 	else:
 		# Thread(name="reloader",target=reloading,args=(handles,)).start()
-		Process(name="reloader",target=reloading,args=(handles,)).start()
+		Thread(name="reloader",target=reloading,args=(handles,)).start()
 		return "<html><h1>Reloading Started</h1></html>"
 
 @app.route("/salpha")
 def stop_reload():
 	flag=0
-	for i in multiprocessing.active_children():
+	for i in threading.enumerate():
 		if i.name=="reloader":
 			flag=1
 			i.terminate()
@@ -70,7 +72,7 @@ def stop_reload():
 @app.route("/status_reloader")
 def status_reloader():
 	flag=0
-	for i in multiprocessing.active_children():
+	for i in threading.enumerate():
 		if i.name=="reloader":
 			flag=1
 	if flag==1:
