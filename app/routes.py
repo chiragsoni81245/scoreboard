@@ -25,7 +25,7 @@ def index():
 	c.execute(q)
 	d = c.fetchall()
 	for i in d:
-		if i[4]+i[3]==0
+		if i[4]+i[3]==0:
 			data.append( { 'name':i[1], 'star':i[0], 'points':i[2],'accepted':i[3],'wrong':i[4],'accuracy': "Not Started" } )
 		else:
 			data.append( { 'name':i[1], 'star':i[0], 'points':i[2],'accepted':i[3],'wrong':i[4],'accuracy': str( int( (i[3]/(i[4]+i[3]))*100) ) } )
