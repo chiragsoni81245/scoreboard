@@ -24,7 +24,11 @@ def index():
 	q="select star,name,points,accepted,wrong from score;"
 	c.execute(q)
 	d = c.fetchall()
-	data = [ { 'name':i[1], 'star':i[0], 'points':i[2],'accepted':i[3],'wrong':i[4],'accuracy':int( (i[3]/(i[4]+i[3]))*100) } for i in d ]
+	for i in d:
+		if i[4]+i[3]==0
+			data.append( { 'name':i[1], 'star':i[0], 'points':i[2],'accepted':i[3],'wrong':i[4],'accuracy': "Not Started" } )
+		else:
+			data.append( { 'name':i[1], 'star':i[0], 'points':i[2],'accepted':i[3],'wrong':i[4],'accuracy': str( int( (i[3]/(i[4]+i[3]))*100) ) } )
 	db.close()
 
 	data.sort( key=lambda x: x['points'],reverse=True )
