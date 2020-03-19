@@ -10,8 +10,29 @@
 </head>
 <body>
 	<div class="continer mx-auto">
-		<h1 class="text-center">Awakinn Code Week</h1>
-		<p class="text-info text-center">Update in Every 20 Minutes</p>
+		<h1 class="text-center"><strong>Awakinn</strong><br>Code Week</h1>
+		
+		<div class="d-flex" style="justify-content: center;">
+			<div class="card m-2" style="width: 10rem">
+				<img class="card-img-top" src="{{ url_for('static',filename='1.png') }}">
+				<div class="card-body">
+					<td><a href="https://codeforces.com/profile/{{ data[0][1]['name'] }}" target="blank" style="font-size: 1.2em" >{{ data[0][1]['name'] }}</a></td>
+				</div>
+			</div>
+			<div class="card m-2" style="width: 10rem">
+				<img class="card-img-top" src="{{ url_for('static',filename='2.png') }}">
+				<div class="card-body">
+					<td><a href="https://codeforces.com/profile/{{ data[0][1]['name'] }}" target="blank" style="font-size: 1.2em" >{{ data[1][1]['name'] }}</a></td>
+				</div>
+			</div>
+			<div class="card m-2" style="width: 10rem">
+				<img class="card-img-top" src="{{ url_for('static',filename='3.png') }}">
+				<div class="card-body">
+					<td><a href="https://codeforces.com/profile/{{ data[0][1]['name'] }}" target="blank" style="font-size: 1.2em" >{{ data[2][1]['name'] }}</a></td>
+				</div>
+			</div>
+		</div>
+		
 		<table class="table table-striped text-center">
 			<tr>
 				<th>Rank</th>
@@ -20,6 +41,7 @@
 				<th>Points</th>
 				<th>Accepted</th>
 				<th>Wrong</th>
+				<th>Accuracy</th>
 				<th></th>
 			</tr>
 
@@ -31,6 +53,7 @@
 					<td><b>{{ tr[1]['points'] }}</b></td>
 					<td>{{ tr[1]['accepted'] }}</td>
 					<td>{{ tr[1]['wrong'] }}</td>
+					<td>{{ tr[1]['accuracy'] }} %</td>
 					<td><a href="{{ url_for( 'info',user=tr[1]['name'] ) }}">Details</a></td>
 				</tr>
 			{% endfor %}

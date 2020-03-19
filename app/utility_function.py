@@ -1,12 +1,13 @@
 import requests
 from bs4 import BeautifulSoup
 from collections import defaultdict
-from threading import Thread
+from threading import Thread,RLock
 import sqlite3 as sq3
 import time
+from datetime import datetime, timedelta
+
 
 # AW = Accepted Wrong
-
 def q_generator( handle,aw,rating,point,query_list,question,date_time ):
 	q = "insert into aw(name,aw,rating,point,question_txt,question_link,date_time) values('{}',{},{},{},'{}','{}','{}');".format(handle,
 																											aw,
@@ -155,7 +156,7 @@ def fetch_rating(link):
 		rating = -1
 	return rating
 
-def get_questions( handle, page,data ):
+def get_questions( handle, page,data,pointer_initiated ):
 	link = "https://codeforces.com/submissions/{}/page/{}".format(handle,page)
 	r = requests.get(link)
 	soup = BeautifulSoup(r.text,"html.parser")
@@ -170,63 +171,72 @@ def get_questions( handle, page,data ):
 		point = i.find_all("td")[0].text.strip()
 		question = i.find_all("td")[3].find("a")
 		date_time = i.find_all("td")[1].text.strip().strip("\n")
+		date_time = (datetime.strptime( date_time,"%b/%d/%Y %H:%M" )+timedelta(hours=2,minutes=30)).strftime("%b/%d/%Y %H:%M")
 
-		if str(point) == str(data[handle]["pointer"]):
+
+		print( point,date_time, datetime.strptime( date_time, "%b/%d/%Y %H:%M" ) > datetime.strptime( "2020-03-20 00:00", "%Y-%m-%d %H:%M" )  )
+
+		if data[handle]['pointer']==point or datetime.strptime( date_time, "%b/%d/%Y %H:%M" ) < datetime.strptime( "2020-03-16 00:00", "%Y-%m-%d %H:%M" ):
 			br=1
 			break
 
 		# print( i )
 		# print( i.find_all("td")[5].find_all("span") )
-		try: 
-			if i.find_all("td")[5].text.find("Running")==-1 and i.find_all("td")[5].text.find("queue")==-1:
-				verdict = i.find_all("td")[5].find_all("span")[1].text
-				if verdict == "Accepted":
-					c = c + 1
-					link = "https://codeforces.com"+i.find_all("td")[3].a['href']
-					rating = fetch_rating(link)
-					if rating!=-1:
-						submission.append( (rating,question,True,date_time) )
+		try:
+			if datetime.strptime( date_time, "%b/%d/%Y %H:%M" ) <= datetime.strptime( "2020-03-20 00:00", "%Y-%m-%d %H:%M" ): 
+				if i.find_all("td")[5].text.find("Running")==-1 and i.find_all("td")[5].text.find("queue")==-1:
+
+					if not pointer_initiated[0]:
+						data[handle]['pointer']=point
+						print("pointer Initiated with value {}".format(point))
+						pointer_initiated[0]=True
+
+					verdict = i.find_all("td")[5].find_all("span")[1].text
+					if verdict == "Accepted":
+						c = c + 1
+						link = "https://codeforces.com"+i.find_all("td")[3].a['href']
+						rating = fetch_rating(link)
+						if rating!=-1:
+							submission.append( (rating,question,True,date_time) )
+					else:
+						w = w + 1
+						link = "https://codeforces.com"+i.find_all("td")[3].a['href']
+						rating = fetch_rating(link)
+						if rating!=-1:
+							submission.append( (rating,question,False,date_time) )
 				else:
-					w = w + 1
-					link = "https://codeforces.com"+i.find_all("td")[3].a['href']
-					rating = fetch_rating(link)
-					if rating!=-1:
-						submission.append( (rating,question,False,date_time) )
+					print("This Question is in queue or running")
 			else:
-				br=2
-				break
+				print("Date time exeded for this question")
 		except:
 			pass
 		
 	return  [ [c,w,submission], br ]
 
 
-def start_pointer( handle ):
-	link = "https://codeforces.com/submissions/{}/page/1".format(handle)
-	r = requests.get(link)
-	soup = BeautifulSoup(r.text,"html.parser")
-	table = soup.find_all("table",{"class":["status-frame-datatable"]})[0]
-	trs = table.find_all("tr")[1:]
-	fp = trs[0].find_all("td")[0].text.strip().strip("\n")
-	return fp
+# def start_pointer( handle ):
+# 	link = "https://codeforces.com/submissions/{}/page/1".format(handle)
+# 	r = requests.get(link)
+# 	soup = BeautifulSoup(r.text,"html.parser")
+# 	table = soup.find_all("table",{"class":["status-frame-datatable"]})[0]
+# 	trs = table.find_all("tr")[1:]
+# 	fp = trs[0].find_all("td")[0].text.strip().strip("\n")
+# 	return fp
 
 def page_traversal(handle,data,query_list):
-	page=1
+
 	c,w,submission=0,0,[]
-	fp = start_pointer( handle )
-	time.sleep( 2 )
+	page=1
+	pointer_initiated = [ False ]
+
 	while(1):
-		result = get_questions( handle,page,data )
+		result = get_questions( handle,page,data,pointer_initiated )
 		l=result[0]
 		c+=l[0]
 		w+=l[1]
 		submission+=l[2]
-
-		if result[1]==2:
-			break
 			
 		if result[1]==1:
-			data[handle]["pointer"] = fp
 			break
 
 		page+=1
@@ -239,8 +249,22 @@ def page_traversal(handle,data,query_list):
 
 	print( "{} Accepted:{}, Wrong:{}, Points:{}\n".format( handle, c,w, data[handle]['points'] ) )
 
-def update_point( handle,data,query_list ):
-	page_traversal(handle,data,query_list)
+def update_point( handle,data,query_list,lock ):
+
+	data1 = dict(data)
+	query_list1 = list( query_list )
+	
+	page_traversal(handle,data1,query_list1)
+
+	lock.acquire()
+	print("lock Acquired")
+
+	data = dict (data1)
+	query_list += list( query_list1 )
+	print( query_list )
+	lock.release()
+	print("Lock Released")
+
 
 def score_count( handles ):
 	db = sq3.connect("score.db")
@@ -251,14 +275,21 @@ def score_count( handles ):
 	data = defaultdict(dict)
 	data = { i[1]:{'star':i[0],'points':i[2],'pointer':i[3],'accepted':i[4],'wrong':i[5]} for i in d }
 	query_list = []
-	# print( data )
-	
+	lock = RLock()
+
+
+	threads=[]
+
 	for handle in handles:
-		# t = Thread( target=update_point, args=(handle,) )
-		# t.daemon=True
-		# t.start()
-		# t.join()
-		update_point(handle,data,query_list)
+		
+		i = Thread( target=update_point,args=(handle,data,query_list,lock) )
+		i.start()
+		threads.append( i )
+		# update_point(handle,data,query_list,lock)
+
+	for i in threads:
+		print("Thread is joining")
+		i.join()
 
 	for i in data:
 		q1="update score set points={},pointer='{}',accepted={},wrong={} where name='{}'".format(data[i]['points'],data[i]['pointer'],data[i]['accepted'],data[i]['wrong'],i)
@@ -267,8 +298,6 @@ def score_count( handles ):
 	for i in query_list:
 		print(i)	
 		c.execute(i)
-
-	query_list=[]
 
 	db.commit()
 	db.close()

@@ -12,6 +12,9 @@ import threading
 from datetime import datetime,timedelta
 
 handles = ['hr4_harsh', 'ziddi', 'tanu38', 'chiragsoni812', 'mohi07', 'chauhan002', 'shivambhat', 'sp_', 'Nishant_Rao', 'Aka_coder', 'AM_coder', 'ankitkochar1578', '_viru_', 'hitzmac', 'khiladi.07', '_chanchal', "shubhamz950"]
+global stop_flag
+stop_flag=False
+
 
 @app.route("/")
 def index():
@@ -21,7 +24,7 @@ def index():
 	q="select star,name,points,accepted,wrong from score;"
 	c.execute(q)
 	d = c.fetchall()
-	data = [ { 'name':i[1], 'star':i[0], 'points':i[2],'accepted':i[3],'wrong':i[4] } for i in d ]
+	data = [ { 'name':i[1], 'star':i[0], 'points':i[2],'accepted':i[3],'wrong':i[4],'accuracy':int( (i[3]/(i[4]+i[3]))*100) } for i in d ]
 	db.close()
 
 	data.sort( key=lambda x: x['points'],reverse=True )
@@ -44,9 +47,7 @@ def info(user):
 	db.close()
 	data = [ { 'aw':i[1],'rating':i[2],'point':i[3],"question_txt":i[4],"question_link":i[5],"date_time":i[6] } for i in d ]
 	data.sort( key=lambda x: datetime.strptime( x['date_time'],"%b/%d/%Y %H:%M" ),reverse=True )
-	for i in data:
-		i['date_time'] = (datetime.strptime( i['date_time'],"%b/%d/%Y %H:%M" )+timedelta(hours=2,minutes=30)).strftime("%b/%d/%Y %H:%M")
-	
+
 	return render_template("info.html",data=data,name=user)
 
 @app.route("/alpha")
@@ -59,6 +60,8 @@ def reload():
 		return "<html><h1>Already Running</h1></html>"
 	else:
 		# Thread(name="reloader",target=reloading,args=(handles,)).start()
+		global stop_flag
+		stop_flag=False
 		Thread(name="reloader",target=reloading,args=(handles,)).start()
 		return "<html><h1>Reloading Started</h1></html>"
 
@@ -68,7 +71,9 @@ def stop_reload():
 	for i in threading.enumerate():
 		if i.name=="reloader":
 			flag=1
-			i.terminate()
+			global stop_flag
+			stop_flag=True
+			i.join()
 	if flag==1:
 		return "<html><h1>Reloader Stoped</h1></html>"
 	else:
@@ -87,6 +92,9 @@ def status_reloader():
 
 def reloading(handles):
 	while True:
+		global stop_flag
+		if stop_flag:
+			break
 		print("\nReloading has been started [{}]\n\n".format( datetime.now().strftime("%Y-%m-%d %H:%M") ) )
 		score_count( handles )
 		time.sleep(2)
